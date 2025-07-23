@@ -19,6 +19,8 @@ set -e
 
 env_name=$1
 
+source $CONDA_PREFIX/etc/profile.d/conda.sh
+
 echo "****** create environment " $env_name "*****"
 # create environment
 conda create -y --name $env_name python=3.7
