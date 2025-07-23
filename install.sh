@@ -39,3 +39,6 @@ echo "***** build extensions *****"
 cp toolkit/utils/c_region.pxd .
 python setup.py build_ext --inplace
 rm c_region.pxd
+
+echo "***** install self in editable way *****"
+pip install -e .
