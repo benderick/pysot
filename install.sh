@@ -1,17 +1,23 @@
 #!/bin/bash
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 1 ]; then
     echo "ARGS ERROR!"
-    echo "  bash install.sh /path/to/your/conda env_name"
+    echo "  bash install.sh env_name"
+    exit 1
+fi
+
+dir=$(basename "$PWD")
+
+if [ "$dir" == "pysot" ]; then
+    echo "Running in the pysot directory"
+else
+    echo "Not in the pysot directory"
     exit 1
 fi
 
 set -e
 
-conda_path=$1
-env_name=$2
-
-source $conda_path/etc/profile.d/conda.sh
+env_name=$1
 
 echo "****** create environment " $env_name "*****"
 # create environment
@@ -20,19 +26,16 @@ conda activate $env_name
 
 echo "***** install numpy pytorch opencv *****"
 # numpy
-conda install -y numpy
+conda install -y "numpy<1.24"
 # pytorch
-# pytorch with cuda80/cuda90 is tested
-conda install -y pytorch=0.4.1 torchvision cuda90 -c pytorch
-# opencv
-pip install opencv-python
-# tensorboardX
+conda install -y pytorch==1.10.1 torchvision==0.11.2 torchaudio==0.10.1 cudatoolkit=11.3 -c pytorch -c conda-forge
 
+# install other libs
 echo "***** install other libs *****"
-pip install tensorboardX
-# libs
-pip install pyyaml yacs tqdm colorama matplotlib cython
+pip install -r requirements.txt
 
 
 echo "***** build extensions *****"
+cp toolkit/utils/c_region.pxd .
 python setup.py build_ext --inplace
+rm c_region.pxd
